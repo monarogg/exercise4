@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -22,7 +23,6 @@ func main() {
 	}
 
 	exec.Command("gnome-terminal", "--", "go", "run", "progB.go").Run()
-
 
 	sendUDP(value)
 
@@ -57,17 +57,13 @@ func listenUDP() (int, error) {
 			break
 		}
 
-		// muligens unødvendig:
-		if n == 0 {
-			fmt.Println("UDP-package empty")
-			continue
-		}
 		last_message_str := string(buffer[:n])
+		last_message_str = strings.TrimSpace(last_message_str)
 
 		last_message, err = strconv.Atoi(last_message_str)
 		if err != nil {
-			 	return 0, fmt.Errorf("Error with converting message")
-			}
+			return 0, fmt.Errorf("Error with converting message")
+		}
 
 		fmt.Println("last_message: ", last_message)
 
@@ -91,24 +87,17 @@ func sendUDP(value int) {
 
 	defer conn.Close()
 
-	buffer := make([]byte, 1024)
+	//buffer := make([]byte, 1024)
 
-	// message, err := strconv.Atoi(value)
-	// if err != nil {
-	// 	fmt.Println("Error with converting message")
-	// 	return
-	// }
-
-
-	fmt.Println("MESSAGE: ", value)
+	fmt.Println("VALUE: ", value)
 	message := value
 
 	for {
-		for i := 1; i < 100; i++ {
-			message += i
+		for i := 0; i < 100; i++ {
+			message ++
 
-			meld := strconv.Itoa(i)
-			_, err := conn.Write(buffer)
+			meld := strconv.Itoa(message)
+			_, err := conn.Write([]byte(meld))
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -116,7 +105,6 @@ func sendUDP(value int) {
 			fmt.Println("Sendt: ", meld)
 			time.Sleep(1 * time.Second)
 		}
-		//os.Exit(0)
 	}
 
 }
