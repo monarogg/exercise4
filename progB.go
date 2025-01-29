@@ -94,7 +94,7 @@ func sendUDP(value int) {
 
 	for {
 		for i := 0; i < 100; i++ {
-			message ++
+			message++
 
 			meld := strconv.Itoa(message)
 			_, err := conn.Write([]byte(meld))
